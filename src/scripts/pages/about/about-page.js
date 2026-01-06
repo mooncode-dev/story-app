@@ -16,13 +16,13 @@ export default class AboutPage {
             <button id="subscribe-push" class="btn-secondary">Aktifkan Notifikasi</button>
           </div>
           
-          <img src="/images/logo.png" alt="Logo resmi Story App" style="width: 150px; margin-top: 1rem;">
+          <img src="images/logo.png" alt="Logo resmi Story App" style="width: 150px; margin-top: 1rem;">
         </article>
       </section>
     `;
   }
 
-async afterRender() {
+  async afterRender() {
     const subscribeButton = document.querySelector('#subscribe-push');
     
     await this._initialButtonState(subscribeButton);
@@ -34,6 +34,44 @@ async afterRender() {
         await this._unsubscribe(subscribeButton);
       } else {
         await this._subscribe(subscribeButton);
+      }
+    });
+
+    const btnSubscribe = document.querySelector('#btn-subscribe');
+    
+    btnSubscribe.addEventListener('click', async () => {
+      const status = await Notification.requestPermission();
+  
+      if (status === 'granted') {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: 'ISI_VAPID_PUBLIC_KEY_DISINI', 
+        });
+
+        await subscribePushNotification(subscription);
+        alert('Notifikasi berhasil diaktifkan!');
+      }
+    });
+
+    const btnNotification = document.querySelector('#btn-notification');
+
+    if (Notification.permission === 'granted') {
+      btnNotification.innerText = 'Matikan Notifikasi';
+      btnNotification.style.backgroundColor = '#ff4d4d';
+    } else {
+      btnNotification.innerText = 'Aktifkan Notifikasi';
+      btnNotification.style.backgroundColor = '#007bff';
+    }
+
+    btnNotification.addEventListener('click', async () => {
+      if (Notification.permission !== 'granted') {
+        const result = await Notification.requestPermission();
+        if (result === 'granted') {
+          location.reload();
+        }
+      } else {
+        alert('Notifikasi sudah aktif. Untuk mematikan, silakan ubah pengaturan izin di browser Anda.');
       }
     });
   }

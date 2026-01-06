@@ -46,3 +46,15 @@ export async function login(email, password) {
   
   return responseJson;
 }
+
+export const subscribePushNotification = async (subscription) => {
+  const response = await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: JSON.stringify(subscription),
+  });
+  return response.json();
+};

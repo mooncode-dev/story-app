@@ -1,4 +1,5 @@
 import { getAllStories } from '../../data/api';
+import { FavoriteDb } from '../../utils/db';
 
 export default class HomePage {
   async render() {
@@ -41,10 +42,40 @@ export default class HomePage {
               <h3>${story.name}</h3>
               <p>${story.description}</p>
               <small>${new Date(story.createdAt).toDateString()}</small>
+              <div class="card-actions" style="margin-top: 1rem;">
+                 <button class="btn-save" 
+                         style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;" 
+                         data-id="${story.id}">
+                    Simpan Cerita
+                 </button>
+              </div>
             </div>
           </article>
         `;
       });
+
+      const saveButtons = document.querySelectorAll('.btn-save');
+      saveButtons.forEach((button) => {
+        button.addEventListener('click', async (event) => {
+          const storyId = event.target.dataset.id;
+          
+          const storyToSave = stories.find((s) => s.id === storyId);
+
+          try {
+            await FavoriteDb.putStory(storyToSave);
+            
+            event.target.innerText = 'Tersimpan';
+            event.target.style.backgroundColor = '#28a745';
+            event.target.disabled = true;
+            
+            alert('Cerita berhasil disimpan ke Favorit!');
+          } catch (err) {
+            console.error("Gagal menyimpan ke favorit", err);
+            alert('Gagal menyimpan cerita.');
+          }
+        });
+      });
+
     } catch (error) {
       console.error("Gagal memuat data peta atau list", error);
       document.querySelector('#story-container').innerHTML = '<p>Gagal memuat data. Pastikan Anda sudah login.</p>';

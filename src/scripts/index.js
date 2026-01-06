@@ -1,5 +1,6 @@
 import '../styles/styles.css';
 import App from './pages/app';
+import 'virtual:pwa-register';
 
 
 function updateNav() {
@@ -74,5 +75,17 @@ window.addEventListener('online', async () => {
     }
     alert('Koneksi kembali! Cerita offline kamu telah berhasil di-upload.');
     window.location.reload();
+  }
+});
+
+window.addEventListener('load', () => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js', { type: 'module' }) 
+      .then(() => {
+        console.log('Service Worker registered as module successfully');
+      })
+      .catch((error) => {
+        console.error('Service Worker registration failed:', error);
+      });
   }
 });
