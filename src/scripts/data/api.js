@@ -47,7 +47,7 @@ export async function login(email, password) {
   return responseJson;
 }
 
-export const subscribePushNotification = async (subscription) => {
+export const sendSubscriptionToServer = async (subscription) => {
   const response = await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
     method: 'POST',
     headers: {
@@ -55,6 +55,18 @@ export const subscribePushNotification = async (subscription) => {
       'Authorization': `Bearer ${localStorage.getItem('token')}`,
     },
     body: JSON.stringify(subscription),
+  });
+  return response.json();
+};
+
+export const deleteSubscriptionFromServer = async (endpoint) => {
+  const response = await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: JSON.stringify({ endpoint }),
   });
   return response.json();
 };
